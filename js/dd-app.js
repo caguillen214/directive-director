@@ -141,13 +141,37 @@ var checkDefaultDirs = function() {
       failedAttributes = getFailedAttributes(attrsOfEle);
       if(failedAttributes.length){
         failedEle = {
-          htmlComponent:windowElements[elesIndex],
+          ele: windowElements[elesIndex],
           failedAttributes: failedAttributes
         };
         failedElements.push(failedEle);
       }
     }
   }
+}
+var getSuggestions = function() {
+  for(var failedEleIndex = 0; failedEleIndex < failedElements.length; failedEleIndex++) {
+    var cDirMatch = findClosestMatchIn(CUSTOM, failedEleIndex);
+    var dDirMatch = findClosestMatchIn(DEFAULT, failedEleIndex);
+    var match;
+    for(var index = 0; index < cDirMatch.length; index++) {
+      var minLevDist = Math.min(cDirMatch[index].levDist, dDirMatch[index].levDist);
+      var match = (minLevDist == cDirMatch[index].levDist)? cDirMatch : dDirMatch;
+    }
+    var toPush = {domElement: failedElements[failedEleIndex], results: match};
+    correctionsFound.push(toPush);
+  }
+}
+var displayResults = function() {
+  correctionsFound.forEach(function(obj) {ß
+    obj.results.forEach(function(attr) {
+      id = (obj.domElement.ele.id) ? 'with id: #'+obj.domElement.ele.id : '';
+      type = obj.domElement.ele.nodeName;
+      var message = 'There was an error in '+type+' element '+id+
+      '. Found incorrect attribute "'+attr.error+'" try "'+attr.match+'".';
+      console.log(message);
+    })
+  })
 }
 var getFailedAttributes = function(attributes) {
   var failedAttributes = [];
@@ -165,19 +189,6 @@ var getFailedAttributes = function(attributes) {
   }
   return failedAttributes;
 }
-var getSuggestions = function() {
-  for(var failedEleIndex = 0; failedEleIndex < failedElements.length; failedEleIndex++) {
-    var cDirMatch = findClosestMatchIn(CUSTOM, failedEleIndex);
-    var dDirMatch = findClosestMatchIn(DEFAULT, failedEleIndex);
-    var match;
-    for(var index = 0; index < cDirMatch.length; index++) {
-      var minLevDist = Math.min(cDirMatch[index].levDist, dDirMatch[index].levDist);
-      var match = (minLevDist == cDirMatch[index].levDist)? cDirMatch : dDirMatch;
-    }
-    var toPush = {htmlComponent: failedElements[failedEleIndex], results: match};
-    correctionsFound.push(toPush);
-  }
-}
 var findClosestMatchIn = function(isDefault, currentEle) {
   var toSearch = (isDefault)? defaultDirectives : customDirectives;
   var failedEleAttrs = failedElements[currentEle].failedAttributes;
@@ -191,7 +202,6 @@ var findClosestMatchIn = function(isDefault, currentEle) {
         var currentlevDist = levenshteinDistance(dirFail,dirCust);
         var closestMatch = (min_levDist > currentlevDist)? dirCust : closestMatch;
         var min_levDist = (min_levDist > currentlevDist)? currentlevDist : min_levDist;
-        console.log("New LD: "+min_levDist+"  New Match: "+closestMatch);
       }
     }
     correctionsToSend.push({
@@ -203,14 +213,11 @@ var findClosestMatchIn = function(isDefault, currentEle) {
   return correctionsToSend;
 }
 var attrOfEleExsistIn = function(isDefault,attribute){
-  //for(var attrIndex = 0; attrIndex < attribute.length; attrIndex++) {
-    //attrName = attribute[attrIndex].nodeName;
-    var currentAttr = (isDefault)? defaultDirectives[attribute]:
-      customDirectives[attribute];
-    if(currentAttr) {
-      return true;
-    }
-  //}
+  var currentAttr = (isDefault)? defaultDirectives[attribute]:
+    customDirectives[attribute];
+  if(currentAttr) {
+    return true;
+  }
   return false;
 }
 var levenshteinDistance = function(s, t) {
@@ -247,10 +254,4 @@ var levenshteinDistance = function(s, t) {
 
 checkDefaultDirs();
 getSuggestions();
-console.log("windowElements")
-console.log(windowElements);
-console.log("failedElements")
-console.log(failedElements);
-console.log("correctionsFound")
-console.log(correctionsFound);
-
+displayResults();
