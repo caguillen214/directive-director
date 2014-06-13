@@ -1,5 +1,5 @@
 var ddApp = {
-  windowElements : Array.prototype.slice.call(document.getElementsByTagName("*")),
+  scopeElements : [],
   DEFAULT : true,
   CUSTOM : false,
   defaultDirectives : {
@@ -35,6 +35,7 @@ var ddApp = {
     'frameborder': 'frameborder',
     'headers': 'headers',
     'height': 'height',
+    'http-equiv':'http-equiv',
     'href': 'href',
     'id': 'id',
     'label': 'label',
@@ -134,10 +135,19 @@ var ddApp = {
     'ng-value': 'ng-value'},
   customDirectives : {'ha-breadcrumbs':'ha-breadcrumbs','ha-footer':'ha-footer'},
   failedElements : [],
-  correctionsFound : []
+  correctionsFound : [],
+  message: ""
 }
-ddApp.checkDefaultDirs = function() {
-  ddApp.windowElements.forEach(function(element) {
+ddApp.setScope = function(isTest){
+  var scope = (isTest)?
+    document.getElementsByClassName('ddAppTest') : document.getElementsByTagName('*');
+  ddApp.scopeElements = Array.prototype.slice.call(scope);
+}
+ddApp.findFailedElements = function(scopeElements) {
+  if(!Array.isArray(scopeElements)) {
+    throw new Error("Function findFailedElements must be passed an array.");
+  }
+  scopeElements.forEach(function(element) {
     if(element.attributes.length) {
       failedAttributes = ddApp.getFailedAttributes(element.attributes);
       if(failedAttributes.length) {
@@ -168,9 +178,9 @@ ddApp.displayResults = function() {
     obj.results.forEach(function(attr) {
       id = (obj.domElement.element.id) ? 'with id: #'+obj.domElement.element.id : '';
       type = obj.domElement.element.nodeName;
-      var message = 'There was an error in '+type+' element '+id+
+      ddApp.message = 'There was an error in '+type+' element '+id+
       '. Found incorrect attribute "'+attr.error+'" try "'+attr.match+'".';
-      console.log(message);
+      console.log(ddApp.message);
     })
   })
 }
@@ -247,7 +257,7 @@ ddApp.levenshteinDistance = function(s, t) {
     }
     return d[n][m];
 }
-
-ddApp.checkDefaultDirs();
+ddApp.setScope(false);
+ddApp.findFailedElements(ddApp.scopeElements);
 ddApp.getSuggestions();
 ddApp.displayResults();
