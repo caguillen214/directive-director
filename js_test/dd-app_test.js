@@ -1,7 +1,6 @@
 describe('dd-app', function() {
   describe('windowElements', function() {
     it('should be an HTMLCollection', function() {
-      console.log(windowElements)
       expect(windowElements instanceof HTMLCollection).toBe(true);
     })
     it('should retrieve an array with the <html> element as the first spot', function() {

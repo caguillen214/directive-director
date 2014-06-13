@@ -1,5 +1,6 @@
 var windowElements = document.getElementsByTagName("*");
-var angularDefaultDirectives = {
+var DEFAULT = true, CUSTOM = false;
+var defaultDirectives = {
   'ng-app': 'ng-app',
   'ng-bind': 'ng-bind',
   'ng-bindhtml': 'ng-bindhtml',
@@ -52,23 +53,34 @@ var angularDefaultDirectives = {
   'ng-switch': 'ng-switch',
   'ng-transclude': 'ng-transclude',
   'ng-value': 'ng-value'};
+var customDirectives = {'ha-breadcrumbs':'ha-breadcrumbs'}
 var failedElements = [];
 var checkDefaultDirs = function() {
   for(elesIndex = 0; elesIndex < windowElements.length; elesIndex++) {
-    var attrsOfEles = windowElements[elesIndex].attributes;
-    var matchFound = attrsOfEleInDefaults(attrsOfEle);
-    if(!matchFound) {
-      failedElements.push(windowElements[elesIndex]);
-    }
+    var attrsOfEle = windowElements[elesIndex].attributes;
+    if(attrsOfEle.length){
+      var matchFound = attrsOfEleExsistIn(DEFAULT, attrsOfEle);
+      if(!matchFound && !inCustomDirs(attrsOfEle)) {
+        failedElements.push(windowElements[elesIndex]);
+      }
     }
   }
 }
-var attrsOfEleInDefaults = function(attrsOfEle){
+var inCustomDirs = function(attrsOfEle) {
+  return attrsOfEleExsistIn(CUSTOM, attrsOfEle);
+}
+var attrsOfEleExsistIn = function(isDefault,attrsOfEle){
   for(attrIndex = 0; attrIndex < attrsOfEle.length; attrIndex++) {
-    var currentAttr = angularDefaultDirectives[attrsOfEle[attrIndex].nodeName];
+    var currentAttr = (isDefault)? defaultDirectives[attrsOfEle[attrIndex].nodeName]:
+      customDirectives[attrsOfEle[attrIndex].nodeName];
     if(currentAttr) {
-      return = true;
+      return true;
     }
   }
   return false;
 }
+
+checkDefaultDirs();
+console.log(windowElements);
+console.log(failedElements);
+
