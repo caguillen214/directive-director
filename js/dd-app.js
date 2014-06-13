@@ -1,4 +1,4 @@
-var windowElements = document.getElementsByTagName("*");
+var windowElements = Array.prototype.slice.call(document.getElementsByTagName("*"));
 var DEFAULT = true, CUSTOM = false;
 var defaultDirectives = {
   'abbr' : 'abbr',
@@ -135,38 +135,37 @@ var failedElements = [];
 var correctionsFound = [];
 
 var checkDefaultDirs = function() {
-  for(var elesIndex = 0; elesIndex < windowElements.length; elesIndex++) {
-    var attrsOfEle = windowElements[elesIndex].attributes;
-    if(attrsOfEle.length){
-      failedAttributes = getFailedAttributes(attrsOfEle);
-      if(failedAttributes.length){
-        failedEle = {
-          ele: windowElements[elesIndex],
+  windowElements.forEach(function(element) {
+    if(element.attributes.length) {
+      failedAttributes = getFailedAttributes(element.attributes);
+      if(failedAttributes.length) {
+        failedElement = {
+          element: element,
           failedAttributes: failedAttributes
         };
-        failedElements.push(failedEle);
+        failedElements.push(failedElement);
       }
     }
-  }
+  });
 }
 var getSuggestions = function() {
-  for(var failedEleIndex = 0; failedEleIndex < failedElements.length; failedEleIndex++) {
-    var cDirMatch = findClosestMatchIn(CUSTOM, failedEleIndex);
-    var dDirMatch = findClosestMatchIn(DEFAULT, failedEleIndex);
+  failedElements.forEach(function(failed) {
+    var cDirMatch = findClosestMatchIn(CUSTOM, failed);
+    var dDirMatch = findClosestMatchIn(DEFAULT, failed);
     var match;
-    for(var index = 0; index < cDirMatch.length; index++) {
-      var minLevDist = Math.min(cDirMatch[index].levDist, dDirMatch[index].levDist);
-      var match = (minLevDist == cDirMatch[index].levDist)? cDirMatch : dDirMatch;
+    for(var i in cDirMatch) {
+      var minDifference = Math.min(cDirMatch[i].levDist,dDirMatch[i].levDist);
+      var match = (minDifference == cDirMatch[i].levDist)? cDirMatch: dDirMatch;
     }
-    var toPush = {domElement: failedElements[failedEleIndex], results: match};
+    var toPush = {domElement:failed, results: match};
     correctionsFound.push(toPush);
-  }
+  })
 }
 var displayResults = function() {
-  correctionsFound.forEach(function(obj) {ß
+  correctionsFound.forEach(function(obj) {
     obj.results.forEach(function(attr) {
-      id = (obj.domElement.ele.id) ? 'with id: #'+obj.domElement.ele.id : '';
-      type = obj.domElement.ele.nodeName;
+      id = (obj.domElement.element.id) ? 'with id: #'+obj.domElement.element.id : '';
+      type = obj.domElement.element.nodeName;
       var message = 'There was an error in '+type+' element '+id+
       '. Found incorrect attribute "'+attr.error+'" try "'+attr.match+'".';
       console.log(message);
@@ -175,41 +174,36 @@ var displayResults = function() {
 }
 var getFailedAttributes = function(attributes) {
   var failedAttributes = [];
-  for(var attrIndex = 0; attrIndex < attributes.length; attrIndex++) {
-    var attrName = attributes[attrIndex].nodeName;
-    var inDefault = attrOfEleExsistIn(DEFAULT, attrName);
-    var inCustom = attrOfEleExsistIn(CUSTOM, attrName);
+  for(var i = 0; i < attributes.length; i++) {
+    var attr = attributes[i].nodeName;
+    var inDefault = attrOfEleExsistIn(DEFAULT, attr);
+    var inCustom = attrOfEleExsistIn(CUSTOM, attr);
     if(!inDefault && !inCustom) {
-      var failedAttr = {
-        failedAttr: attrName,
-        correction: ''
-      }
-      failedAttributes.push(failedAttr);
+      failedAttributes.push(attr);
     }
   }
   return failedAttributes;
 }
-var findClosestMatchIn = function(isDefault, currentEle) {
-  var toSearch = (isDefault)? defaultDirectives : customDirectives;
-  var failedEleAttrs = failedElements[currentEle].failedAttributes;
+var findClosestMatchIn = function(isDefault, failedEle) {
+  var directiveData = (isDefault)? defaultDirectives : customDirectives;
+  var failedAttrs = failedEle.failedAttributes;
   var correctionsToSend = [];
-  for(var failedAttrIndex = 0; failedAttrIndex < failedEleAttrs.length; failedAttrIndex++) {
-    var dirFail = failedEleAttrs[failedAttrIndex].failedAttr;
+  failedAttrs.forEach(function(failedAttr) {
     var min_levDist = Number.MAX_SAFE_INTEGER;
-    for(var attr in toSearch) {
-      var dirCust = toSearch[attr];
-      if(Math.abs(dirFail.length-dirCust.length) < 3) {
-        var currentlevDist = levenshteinDistance(dirFail,dirCust);
-        var closestMatch = (min_levDist > currentlevDist)? dirCust : closestMatch;
+    for(var i in directiveData){
+      var attr = directiveData[i]
+      if(Math.abs(failedAttr.length-attr.length) < 3) {
+        var currentlevDist = levenshteinDistance(failedAttr, attr);
+        var closestMatch = (min_levDist > currentlevDist)? attr : closestMatch;
         var min_levDist = (min_levDist > currentlevDist)? currentlevDist : min_levDist;
       }
     }
     correctionsToSend.push({
-      error: dirFail,
-      match:closestMatch,
-      levDist:min_levDist
+      error: failedAttr,
+      match: closestMatch,
+      levDist: min_levDist
     });
-  }
+  });
   return correctionsToSend;
 }
 var attrOfEleExsistIn = function(isDefault,attribute){
