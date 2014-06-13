@@ -59,3 +59,21 @@ var angularDefaultDirectives = {
   'ng-transclude': 'ng-transclude',
   'ng-value': 'ng-value'};
 var failedElements = [];
+var checkDefaultDirs = function() {
+  for(elesIndex = 0; elesIndex < windowElements.length; elesIndex++) {
+    var attrsOfEles = windowElements[elesIndex].attributes;
+    var found = false;
+    for(attrIndex = 0; attrIndex < attrsOfEles.length; attrIndex++) {
+      var currentAttr = angularDefaultDirectives[attrsOfEles[attrIndex].nodeName];
+      if(currentAttr) {
+        found = true;
+        break;
+      }
+    }
+    if(!found) {
+      failedElements.push(windowElements[elesIndex]);
+    }
+  }
+}
+checkDefaultDirs();
+console.log(failedElements);
