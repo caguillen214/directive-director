@@ -138,7 +138,6 @@ var checkDefaultDirs = function() {
   for(var elesIndex = 0; elesIndex < windowElements.length; elesIndex++) {
     var attrsOfEle = windowElements[elesIndex].attributes;
     if(attrsOfEle.length){
-      console.log(attrsOfEle);
       failedAttributes = getFailedAttributes(attrsOfEle);
       if(failedAttributes.length){
         failedEle = {
@@ -170,31 +169,38 @@ var getSuggestions = function() {
   for(var failedEleIndex = 0; failedEleIndex < failedElements.length; failedEleIndex++) {
     var cDirMatch = findClosestMatchIn(CUSTOM, failedEleIndex);
     var dDirMatch = findClosestMatchIn(DEFAULT, failedEleIndex);
-    var closestMatch = (Math.min(cDirMatch.levDist, dDirMatch.levDist)==cDirMatch.levDist)?
-      cDirMatch.match : dDirMatch.match;
-    var toPush = {htmlComponent: failedElements[failedEleIndex], correction: closestMatch};
+    var match;
+    for(var index = 0; index < cDirMatch.length; index++) {
+      var minLevDist = Math.min(cDirMatch[index].levDist, dDirMatch[index].levDist);
+      var match = (minLevDist == cDirMatch[index].levDist)? cDirMatch : dDirMatch;
+    }
+    var toPush = {htmlComponent: failedElements[failedEleIndex], results: match};
     correctionsFound.push(toPush);
   }
 }
 var findClosestMatchIn = function(isDefault, currentEle) {
-  var min_levDist = Number.MAX_SAFE_INTEGER;
   var toSearch = (isDefault)? defaultDirectives : customDirectives;
-  for(var index = 0; index < toSearch.length; index++) {
-    var failedEleAttrs = failedElements[currentEle].failedAttributes;
-    for(var failedAttrIndex = 0; failedAttrIndex < failedEleAttrs.length; failedAttrIndex++) {
-      var dirFail = failedEleAttrs[failedAttrIndex];
-      var dirCust = toSearch[index];
+  var failedEleAttrs = failedElements[currentEle].failedAttributes;
+  var correctionsToSend = [];
+  for(var failedAttrIndex = 0; failedAttrIndex < failedEleAttrs.length; failedAttrIndex++) {
+    var dirFail = failedEleAttrs[failedAttrIndex].failedAttr;
+    var min_levDist = Number.MAX_SAFE_INTEGER;
+    for(var attr in toSearch) {
+      var dirCust = toSearch[attr];
       if(Math.abs(dirFail.length-dirCust.length) < 3) {
         var currentlevDist = levenshteinDistance(dirFail,dirCust);
+        var closestMatch = (min_levDist > currentlevDist)? dirCust : closestMatch;
         var min_levDist = (min_levDist > currentlevDist)? currentlevDist : min_levDist;
-        var closestMatch = (min_levDist > currentlevDist)? dirFail : closestMatch;
+        console.log("New LD: "+min_levDist+"  New Match: "+closestMatch);
       }
     }
+    correctionsToSend.push({
+      error: dirFail,
+      match:closestMatch,
+      levDist:min_levDist
+    });
   }
-  return {
-    match:closestMatch,
-    levDist:min_levDist
-  };
+  return correctionsToSend;
 }
 var attrOfEleExsistIn = function(isDefault,attribute){
   //for(var attrIndex = 0; attrIndex < attribute.length; attrIndex++) {
@@ -240,11 +246,11 @@ var levenshteinDistance = function(s, t) {
 }
 
 checkDefaultDirs();
-//getSuggestions();
+getSuggestions();
 console.log("windowElements")
 console.log(windowElements);
 console.log("failedElements")
 console.log(failedElements);
-// console.log("correctionsFound")
-// console.log(correctionsFound);
+console.log("correctionsFound")
+console.log(correctionsFound);
 
