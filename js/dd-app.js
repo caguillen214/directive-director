@@ -1,11 +1,5 @@
 var windowElements = document.getElementsByTagName("*");
 var angularDefaultDirectives = {
-  'html': 'html',
-  'head': 'head',
-  'meta': 'meta',
-  'title': 'title',
-  'body': 'body',
-  'script': 'script',
   'ng-app': 'ng-app',
   'ng-bind': 'ng-bind',
   'ng-bindhtml': 'ng-bindhtml',
@@ -62,18 +56,19 @@ var failedElements = [];
 var checkDefaultDirs = function() {
   for(elesIndex = 0; elesIndex < windowElements.length; elesIndex++) {
     var attrsOfEles = windowElements[elesIndex].attributes;
-    var found = false;
-    for(attrIndex = 0; attrIndex < attrsOfEles.length; attrIndex++) {
-      var currentAttr = angularDefaultDirectives[attrsOfEles[attrIndex].nodeName];
-      if(currentAttr) {
-        found = true;
-        break;
-      }
-    }
-    if(!found) {
+    var matchFound = attrsOfEleInDefaults(attrsOfEle);
+    if(!matchFound) {
       failedElements.push(windowElements[elesIndex]);
+    }
     }
   }
 }
-checkDefaultDirs();
-console.log(failedElements);
+var attrsOfEleInDefaults = function(attrsOfEle){
+  for(attrIndex = 0; attrIndex < attrsOfEle.length; attrIndex++) {
+    var currentAttr = angularDefaultDirectives[attrsOfEle[attrIndex].nodeName];
+    if(currentAttr) {
+      return = true;
+    }
+  }
+  return false;
+}
