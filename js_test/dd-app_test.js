@@ -1,11 +1,11 @@
 describe('dd-app', function() {
 
-  describe('findFailedElements()', function() {
+  describe('beginSearch()', function() {
     it('should throw if not passed an array', function() {
       var notAnArray = {};
       expect(function() {
-        ddApp.findFailedElements(notAnArray)
-      }).toThrow("Function findFailedElements must be passed an array.");
+        ddApp.beginSearch(notAnArray)
+      }).toThrow("Function beginSearch must be passed an array.");
     })
     it('should return an array with the correct number of failed elements', function() {
       var elementsToTest = [
@@ -13,7 +13,7 @@ describe('dd-app', function() {
         {attributes: [{nodeName:'ng-src'}]},
         {attributes: [{nodeName:'ng-clic'}]}
       ]
-      var results = ddApp.findFailedElements(elementsToTest);
+      var results = ddApp.beginSearch(elementsToTest);
       expect(results.length).toBe(2);
     })
     it('should return an array of objects that have match and error properties', function(){
@@ -22,7 +22,7 @@ describe('dd-app', function() {
         {attributes: [{nodeName:'ng-src'}]},
         {attributes: [{nodeName:'ng-clic'}]}
       ]
-      var corrections = ddApp.findFailedElements(elementsToTest);
+      var corrections = ddApp.beginSearch(elementsToTest);
       missingProperties = false;
       corrections.forEach(function(correction){
         if(!correction.results[0].error && !correction.results[0].match)

@@ -130,18 +130,29 @@ var ddApp = {
     'ng-switch': 'ng-switch',
     'ng-transclude': 'ng-transclude',
     'ng-value': 'ng-value'},
-  customDirectives : {},
 }
 
-ddApp.findFailedElements = function(scopeElements) {
-  var failedElements = [],correctionsFound,message;
+ddApp.beginSearch = function(scopeElements, options) {
+  var customDirectives = false, tolerance = 4;
   if(!Array.isArray(scopeElements)) {
-    throw new Error("Function findFailedElements must be passed an array.");
+    throw new Error("Function beginSearch must be passed an array.");
   }
-  ddApp.setCustomDirectives();
+  options = (options)? options: {};
+  customDirectives = (options.includeCustom)? ddApp.getCustomDirectives() : false;
+  tolerance = (options.tolerance)? options.tolerance: tolerance;
+
+  var failedElements = ddApp.findFailedElements(scopeElements, customDirectives);
+  var correctionsFound = ddApp.getSuggestions(failedElements, tolerance);
+  var messages = ddApp.displayResults(correctionsFound);
+
+  return correctionsFound;
+};
+
+ddApp.findFailedElements = function(scopeElements, customDirectives) {
+  var failedElements = [];
   scopeElements.forEach(function(element) {
     if(element.attributes.length) {
-      failedAttributes = ddApp.getFailedAttributes(element.attributes);
+      failedAttributes = ddApp.getFailedAttributes(element.attributes,customDirectives);
       if(failedAttributes.length) {
         failedElement = {
           element: element,
@@ -151,22 +162,22 @@ ddApp.findFailedElements = function(scopeElements) {
       }
     }
   });
-  correctionsFound = ddApp.getSuggestions(failedElements);
-  messages = ddApp.displayResults(correctionsFound);
-  return correctionsFound;
-};
-ddApp.getSuggestions = function(failedElements) {
+  return failedElements;
+}
+ddApp.getSuggestions = function(failedElements, tolerance) {
   var correctionsFound = [], CUSTOM = true, DEFAULT = false;
   failedElements.forEach(function(failed) {
     var cDirMatch = ddApp.findClosestMatchIn(CUSTOM, failed);
     var dDirMatch = ddApp.findClosestMatchIn(DEFAULT, failed);
-    var match;
+    var match, minDifference;
     for(var i in cDirMatch) {
-      var minDifference = Math.min(cDirMatch[i].levDist,dDirMatch[i].levDist);
-      var match = (minDifference == cDirMatch[i].levDist)? cDirMatch: dDirMatch;
+      minDifference = Math.min(cDirMatch[i].levDist,dDirMatch[i].levDist);
+      match = (minDifference == cDirMatch[i].levDist)? cDirMatch: dDirMatch;
     }
-    var toPush = {domElement:failed, results: match};
-    correctionsFound.push(toPush);
+    if(minDifference < tolerance-2) {
+      var toPush = {domElement:failed, results: match};
+      correctionsFound.push(toPush);
+    }
   })
   return correctionsFound;
 };
@@ -185,24 +196,24 @@ ddApp.displayResults = function(correctionsFound) {
   })
   return messages;
 };
-ddApp.getFailedAttributes = function(attributes) {
-  var CUSTOM = true, DEFAULT = false;
+ddApp.getFailedAttributes = function(attributes, customDirectives) {
+  var CUSTOM = false, DEFAULT = true;
   var failedAttributes = [];
   for(var i = 0; i < attributes.length; i++) {
     var attr = attributes[i].nodeName;
     var inDefault = ddApp.attrOfEleExsistIn(DEFAULT, attr);
-    var inCustom = ddApp.attrOfEleExsistIn(CUSTOM, attr);
+    var inCustom = (customDirectives)? ddApp.attrOfEleExsistIn(CUSTOM, attr) : false;
     if(!inDefault && !inCustom) {
       failedAttributes.push(attr);
     }
   }
   return failedAttributes;
 };
-ddApp.findClosestMatchIn = function(isDefault, failedEle) {
+ddApp.findClosestMatchIn = function(isDefault, failedEle, customDirectives) {
   if(failedEle === null || failedEle === undefined) {
     throw new Error('Function must be passed a defined object as second parameter.')
   }
-  var directiveData = (isDefault)? ddApp.defaultDirectives : ddApp.customDirectives;
+  var directiveData = (isDefault)? ddApp.defaultDirectives : customDirectives;
   var failedAttrs = failedEle.failedAttributes;
   var correctionsToSend = [];
   failedAttrs.forEach(function(failedAttr) {
@@ -223,13 +234,13 @@ ddApp.findClosestMatchIn = function(isDefault, failedEle) {
   })
   return correctionsToSend;
 };
-ddApp.attrOfEleExsistIn = function(isDefault,attribute){
+ddApp.attrOfEleExsistIn = function(isDefault,attribute, customDirectives){
   if(typeof attribute !== 'string') {
     throw new Error('Function must be passed string as second parameter, given: '+
       typeof attribute+'.');
   }
   var currentAttr = (isDefault)? ddApp.defaultDirectives[attribute]:
-    ddApp.customDirectives[attribute];
+    customDirectives[attribute];
   if(currentAttr) {
     return true;
   }
@@ -269,8 +280,8 @@ ddApp.levenshteinDistance = function(s, t) {
     }
     return d[n][m];
 };
-ddApp.setCustomDirectives = function() {
-  ddApp.customDirectives = {'ha-breadcrumbs':'ha-breadcrumbs','ha-footer':'ha-footer'};
+ddApp.getCustomDirectives = function() {
+  return {'ha-breadcrumbs':'ha-breadcrumbs','ha-footer':'ha-footer'};
 };
 var toSend = Array.prototype.slice.call(document.getElementsByTagName("*"));
-var result = ddApp.findFailedElements(toSend);
+var result = ddApp.beginSearch(toSend);
