@@ -149,21 +149,22 @@ ddApp.beginSearch = function(scopeElements, options) {
 };
 
 ddApp.findFailedElements = function(scopeElements, customDirectives) {
-  var failedElements = [];
-  scopeElements.forEach(function(element) {
-    if(element.attributes.length) {
-      failedAttributes = ddApp.getFailedAttributes(element.attributes,customDirectives);
-      if(failedAttributes.length) {
-        failedElement = {
-          element: element,
-          failedAttributes: failedAttributes
-        };
-        failedElements.push(failedElement);
-      }
-    }
-  });
-  return failedElements;
+  return scopeElements.map(ddApp.getFailedAttributesOfElement)
+    .filter(function(x) {return x;});
 }
+
+ddApp.getFailedAttributesOfElement = function(element) {
+  if(element.attributes.length) {
+    var failedAttributes = ddApp.getFailedAttributes(element.attributes);
+    if(failedAttributes.length) {
+      return {
+        element: element,
+        failedAttributes: failedAttributes
+      };
+    }
+  }
+}
+
 ddApp.getSuggestions = function(failedElements, tolerance) {
   var correctionsFound = [], CUSTOM = true, DEFAULT = false;
   failedElements.forEach(function(failed) {
@@ -174,7 +175,7 @@ ddApp.getSuggestions = function(failedElements, tolerance) {
       minDifference = Math.min(cDirMatch[i].levDist,dDirMatch[i].levDist);
       match = (minDifference == cDirMatch[i].levDist)? cDirMatch: dDirMatch;
     }
-    if(minDifference < tolerance-2) {
+    if(minDifference < tolerance) {
       var toPush = {domElement:failed, results: match};
       correctionsFound.push(toPush);
     }
