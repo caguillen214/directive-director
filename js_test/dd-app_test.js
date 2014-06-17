@@ -25,7 +25,7 @@ describe('dd-app', function() {
       var corrections = ddApp.beginSearch(elementsToTest);
       missingProperties = false;
       corrections.forEach(function(correction){
-        if(!correction.results[0].error && !correction.results[0].match)
+        if(!correction.data[0].error && !correction.data[0].match)
         {
           missingProperties = true;
         }
@@ -36,86 +36,66 @@ describe('dd-app', function() {
 
   describe('getSuggestions()', function() {
     it('should return an array of objects with the proper match for each error', function() {
-      var failedElement = [{
-        element: 'html',
-        failedAttributes: ['ng-ap']
-      }]
-      var suggestion = ddApp.getSuggestions(failedElement);
-      expect(suggestion[0].results[0].match).toBe('ng-app');
+      var failedAttr = 'ng-ap';
+      var options = {
+        directiveTypes:['angular-default-directives'],
+        tolerance: 4
+      };
+      var result = ddApp.getSuggestions(failedAttr, options);
+      expect(result.match).toBe('ng-app');
     })
   })
 
   describe('displayResults()', function() {
     it('should display the correct message with respect to the correction found', function() {
-      var obj = {
-        element: {id:'test',nodeName:'DIV'}
-      };
-      var correction = [{
-        domElement: obj,
-        results: [{error:'ng-clic',match:'ng-click'}]
+      var failedElements = [{
+        domElement:{id:'',nodeName:'HTML'},
+        data: [{
+          directiveType: 'angular-default-directives',
+          error: 'ng-ap',
+          match: 'ng-app'
+        }]
       }]
-      var messages = ddApp.displayResults(correction);
-      var display = 'There was an error in DIV element with id: #test. Found incorrect'+
-        ' attribute "ng-clic" try "ng-click".';
+      var messages = ddApp.displayResults(failedElements);
+      var display = 'There was an AngularJS error in HTML element. Found incorrect '+
+        'attribute "ng-ap" try "ng-app".';
       expect(messages[0]).toBe(display);
     })
   })
 
   describe('getFailedAttributes()', function() {
     it('should find failed attributes in element', function() {
+      var options = {
+        directiveTypes:['angular-default-directives'],
+        tolerance: 4
+      };
       var elementToTest = [{nodeName:'ng-ap'},{nodeName:'ng-hef'}];
-      var results = ddApp.getFailedAttributes(elementToTest);
-      expect(results[0]).toBe('ng-ap');
-      expect(results[1]).toBe('ng-hef');
+      var results = ddApp.getFailedAttributes(elementToTest,options);
+      expect(results[0].error).toBe('ng-ap');
+      expect(results[1].error).toBe('ng-hef');
     })
   })
 
   describe('findClosestMatchIn()', function() {
     it('should throw if passed undefined or null', function() {
       expect(function() {
-        ddApp.findClosestMatchIn(true,null);
-      }).toThrow('Function must be passed a defined object as second parameter.');
+        ddApp.findClosestMatchIn({a:''},null);
+      }).toThrow('Function must be passed a string as second parameter.');
       expect(function() {
-        ddApp.findClosestMatchIn(true,undefined);
-      }).toThrow('Function must be passed a defined object as second parameter.');
+        ddApp.findClosestMatchIn({a:''},undefined);
+      }).toThrow('Function must be passed a string as second parameter.');
+      expect(function() {
+        ddApp.findClosestMatchIn('','toPass');
+      }).toThrow('Function must be passed a defined object as first parameter.');
     })
     it('should find the closest match from list of given attributes', function() {
-      var failedElement = {
-        element: 'html',
-        failedAttributes: ['ng-ap']
-      };
-      var corrections = ddApp.findClosestMatchIn(true,failedElement);
-      expect(corrections[0].match).toBe('ng-app');
+      var directiveTypeData = {'ng-src':'ng-src','ng-app':'ng-app','ng-click':'ng-click'};
+      var attribute = 'ng-ap';
+      var result = ddApp.findClosestMatchIn(directiveTypeData,attribute);
+      expect(result.match).toBe('ng-app');
     })
   })
 
-  describe('attrOfEleExsistIn()', function() {
-    it('should throw if not passed a string', function() {
-       expect(function() {
-        ddApp.attrOfEleExsistIn(true,null);
-      }).toThrow('Function must be passed string as second parameter, given: object.');
-      expect(function() {
-        ddApp.attrOfEleExsistIn(true,6);
-      }).toThrow('Function must be passed string as second parameter, given: number.');
-      expect(function() {
-        ddApp.attrOfEleExsistIn(true,undefined);
-      }).toThrow('Function must be passed string as second parameter, given: undefined.');
-    })
-    it('should check if attribute exsist in list', function() {
-      var testAttrFail = 'notInList';
-      var testAttrPass = 'ng-click';
-      expect(ddApp.attrOfEleExsistIn(true,testAttrFail)).toBe(false);
-      expect(ddApp.attrOfEleExsistIn(true,testAttrPass)).toBe(true);
-    })
-  })
-
-  describe('setCustomDirectives()', function() {
-    it('should set the custom directives in ddApp', function() {
-      var custom = {'ha-breadcrumbs':'ha-breadcrumbs','ha-footer':'ha-footer'};
-      ddApp.setCustomDirectives(custom);
-      expect(ddApp.customDirectives['ha-breadcrumbs']).toBe('ha-breadcrumbs');
-    })
-  })
   /* Upper and lower bounds of LD
       It is always at least the difference of the sizes of the two strings.
       It is at most the length of the longer string.

@@ -210,6 +210,13 @@ ddApp.getSuggestions = function(attribute, options) {
 };
 
 ddApp.findClosestMatchIn = function(directiveTypeData, attribute) {
+  if(typeof attribute != 'string') {
+    throw new Error('Function must be passed a string as second parameter.');
+  }
+  if((directiveTypeData === null || directiveTypeData === undefined) ||
+    typeof directiveTypeData != 'object') {
+    throw new Error('Function must be passed a defined object as first parameter.');
+  }
   var min_levDist = Number.MAX_SAFE_INTEGER, closestMatch = '';
   for(var directive in directiveTypeData){
     if(Math.abs(attribute.length-directive.length) < 3) {
@@ -234,7 +241,7 @@ ddApp.displayResults = function(failedElements) {
       message = messageOptions[attr.directiveType]+type+' element'+id+
       '. Found incorrect attribute "'+attr.error+'" try "'+attr.match+'".';
       console.log(message)
-      console.log(obj.domElement)
+      //console.log(obj.domElement)
       messages.push(message)
     })
   })
