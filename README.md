@@ -1,4 +1,4 @@
-directive-director
+controller-training [![Build Status](https://travis-ci.org/caguillen214/directive-director.svg?branch=master)](https://travis-ci.org/caguillen/directive-director)
 ==================
 
 Project to identify and alert developer of possibly misspelled directives
