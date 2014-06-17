@@ -179,7 +179,10 @@ ddApp.getFailedAttributes = function(attributes, options) {
     var exsists = ddApp.attributeExsistsInTypes(attr,options);
     if(!exsists) {
       var result = ddApp.getSuggestions(attr,options);
-      failedAttributes.push({match: result.match, error: attr, directiveType:result.directiveType});
+      if(result){
+        failedAttributes.
+          push({match: result.match, error: attr, directiveType:result.directiveType});
+      }
     }
   }
   return failedAttributes;
@@ -206,7 +209,7 @@ ddApp.getSuggestions = function(attribute, options) {
       }
 
   });
-  return {match:match, directiveType:dirType};
+  return (match)? {match:match, directiveType:dirType}: null;
 };
 
 ddApp.findClosestMatchIn = function(directiveTypeData, attribute) {
@@ -241,7 +244,7 @@ ddApp.displayResults = function(failedElements) {
       message = messageOptions[attr.directiveType]+type+' element'+id+
       '. Found incorrect attribute "'+attr.error+'" try "'+attr.match+'".';
       console.log(message)
-      //console.log(obj.domElement)
+      console.log(obj.domElement)
       messages.push(message)
     })
   })
