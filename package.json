@@ -1,0 +1,25 @@
+{
+  "name": "directive-director",
+  "version": "0.0.0",
+  "description": "tool for identifing mistyped attributes and directives",
+  "main": "js/dd-app.js",
+  "devDependencies": {
+    "karma": "0.12.16",
+    "karma-jasmine": "0.1.5",
+    "karma-firefox-launcher": "~0.1.0",
+    "karma-coverage": "~0.1.4"
+  },
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start --browsers Firefox --single-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caguillen214/directive-director"
+  },
+  "author": "caguillen214",
+  "license": "apache 2",
+  "bugs": {
+    "url": "https://github.com/caguillen214/directive-director/issues"
+  },
+  "homepage": "https://github.com/caguillen214/directive-director"
+}
