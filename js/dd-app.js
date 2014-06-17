@@ -151,7 +151,6 @@ ddApp.beginSearch = function(scopeElements, options) {
 
   var failedElements = ddApp.findFailedElements(scopeElements, options);
   var messages = ddApp.displayResults(failedElements);
-  console.log(failedElements);
   return failedElements;
 };
 
@@ -199,7 +198,7 @@ ddApp.attributeExsistsInTypes = function(attribute, options) {
 };
 
 ddApp.getSuggestions = function(attribute, options) {
-  var min_levDist = Number.MAX_SAFE_INTEGER, match = '', dirType = '';
+  var min_levDist = Infinity, match = '', dirType = '';
   options.directiveTypes.forEach(function(directiveType) {
       directiveTypeData = ddApp.directiveTypes[directiveType].directives
       var tempMatch = ddApp.findClosestMatchIn(directiveTypeData, attribute);
@@ -220,7 +219,7 @@ ddApp.findClosestMatchIn = function(directiveTypeData, attribute) {
     typeof directiveTypeData != 'object') {
     throw new Error('Function must be passed a defined object as first parameter.');
   }
-  var min_levDist = Number.MAX_SAFE_INTEGER, closestMatch = '';
+  var min_levDist = Infinity, closestMatch = '';
   for(var directive in directiveTypeData){
     if(Math.abs(attribute.length-directive.length) < 3) {
       var currentlevDist = ddApp.levenshteinDistance(attribute, directive);
