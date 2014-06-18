@@ -284,6 +284,3 @@ ddApp.levenshteinDistance = function(s, t) {
     }
     return d[n][m];
 };
-
-var toSend = Array.prototype.slice.call(document.getElementsByTagName("*"));
-var result = ddApp.beginSearch(toSend);

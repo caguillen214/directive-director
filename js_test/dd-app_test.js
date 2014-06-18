@@ -1,5 +1,19 @@
 describe('dd-app', function() {
 
+  ddescribe('Decorator: $rootScope', function() {
+    var $rootScope, spy;
+    beforeEach(module('deedApp'));
+    beforeEach(inject(function(_$rootScope_) {
+      $rootScope = _$rootScope_;
+      spy = spyOn(ddApp, 'beginSearch').andReturn();
+    }))
+
+    it('should track that ddApp.beginSearch was called', function() {
+      $rootScope.$apply();
+      expect(spy).toHaveBeenCalled();
+    })
+  });
+
   describe('beginSearch()', function() {
     it('should throw if not passed an array', function() {
       var notAnArray = {};
@@ -44,7 +58,7 @@ describe('dd-app', function() {
       var result = ddApp.getSuggestions(failedAttr, options);
       expect(result.match).toBe('ng-app');
     })
-  })
+  });
 
   describe('displayResults()', function() {
     it('should display the correct message with respect to the correction found', function() {
@@ -61,7 +75,7 @@ describe('dd-app', function() {
         'attribute "ng-ap" try "ng-app".';
       expect(messages[0]).toBe(display);
     })
-  })
+  });
 
   describe('getFailedAttributes()', function() {
     it('should find failed attributes in element', function() {
@@ -74,7 +88,7 @@ describe('dd-app', function() {
       expect(results[0].error).toBe('ng-ap');
       expect(results[1].error).toBe('ng-hef');
     })
-  })
+  });
 
   describe('findClosestMatchIn()', function() {
     it('should throw if passed undefined or null', function() {
@@ -94,7 +108,7 @@ describe('dd-app', function() {
       var result = ddApp.findClosestMatchIn(directiveTypeData,attribute);
       expect(result.match).toBe('ng-app');
     })
-  })
+  });
 
   /* Upper and lower bounds of LD
       It is always at least the difference of the sizes of the two strings.
@@ -125,7 +139,7 @@ describe('dd-app', function() {
       expect(bound2).toBe(10)
       expect(bound3).toBe(0)
     })
-  })
+  });
 
 })
 
