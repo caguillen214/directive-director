@@ -18,8 +18,8 @@ module.exports = function(config) {
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'app.js',
-      'js/*.js',
-      'js_test/*.js'
+      'dd-app/*.js',
+      'app_test.js'
     ],
 
 
