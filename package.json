@@ -2,7 +2,7 @@
   "name": "directive-director",
   "version": "0.0.0",
   "description": "tool for identifing mistyped attributes and directives",
-  "main": "js/dd-app.js",
+  "main": "js/dd-lib.js",
   "devDependencies": {
     "karma": "0.12.16",
     "karma-chrome-launcher": "^0.1.4",
