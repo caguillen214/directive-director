@@ -6,22 +6,21 @@
 
     <script src="bower_components/angular/angular.js"></script>
     <script src="dd-lib/dd-lib.js"></script>
+    <script src="demoApp/simple-directive/simple.js"></script>
+    <script src="demoApp/simple-directive/simple-directive.js"></script>
     <script src="decorator.js"></script>
 
   </head>
   <body>
     <div class="container">
         <div ng-view>
-            <div id="test" ng-click="" ng-src="" width="">id="test" ng-click="" ng-src="" width=""</div>
-            <div id="failBasicHTML" widt="" scr="">id="failBasicHTML" widt="" scr=""</div>
-            <span id="fail" ngclick="" ngsr="">id="fail" ngclick="" ngsr=""</span>
-            <div id="passCustom" ha-breadcrumbs>id="passCustom" ha-breadcrumbs</div>
             <p id="failCustom" ha-baerdcrumbs>id="failCustom" ha-baerdcrumbs</p>
             <div id="nested">
               <div id="passNested" class="woohoo">id="passNested" class="woohoo"</div>
               <div id="failNested" class="woohoo" ng-readonl="">id="failNested" class="woohoo" ng-readonl=""</div>
             </div>
-            <ddSimple></ddSimple>
+            <br><br>
+            <ddSimple simpleAttrs="{name:'simpleDirective',speed:'4'}"></ddSimple>
         </div>
     </div>
   </body>
