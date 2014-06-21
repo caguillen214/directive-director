@@ -1,0 +1,49 @@
+<h1>I Can Help Share Resources for Learning Angular</h1>
+
+<a href="//github.com/angular/i-want-to-help/pulls" class="ang-btn improve-docs">
+  <span class="glyphicon glyphicon-edit"></span>
+  Improve this doc
+</a>
+
+<div class="container marginTop">
+  <div>
+    Filter by type:
+    <select class="ang-btn" ng-model="shareResourcesCtrl.type"
+    ng-options="type for type in shareResourcesCtrl.types"></select>
+  </div>
+  <table class="table table-striped table-bordered table-condensed tableTop">
+    <tr>
+      <td>Name
+      <td>Description
+      <td>Type
+      <td>Rating
+    <tr ng-model="shareResourcesCtrl.type" ng-repeat="link in shareResourcesCtrl.links | filter: shareResourcesCtrl.type">
+      <td><a href="{{link.href}}">{{link.name}}</a>
+      <td>{{link.description}}
+      <td>{{link.type[0]}}
+      <td>{{link.rating}}
+  </table>
+</div>
+
+<div class="footer text-center">
+  <ol class="breadcrumb">
+    <li>
+      <a class="inactive" href="#questions/i-want-to-help">I want to help
+      </a>
+    </li>
+    <li>
+      <a class="inactive" href="#questions/help-other-devs">I want to help other developers
+      </a>
+    </li>
+    <li>
+      <a class="active">I want to help share resources</a>
+    </li>
+   </ol>
+</div>
+
+<div class="footer navbar-fixed-bottom">
+  <div class="text-center">
+    <ha-breadcrumbs breadcrumbs="[{url: '#questions/i-want-to-help', text: 'I want to help.'}, {url: '#questions/help-other-devs', text: 'I want to help other developers.'}, {url: '#questions/help-share-resources', text: 'I can help share resources for learning Angular.'}]">
+    </ha-breadcrumbs>
+  </div>
+</div>

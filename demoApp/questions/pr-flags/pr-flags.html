@@ -1,0 +1,71 @@
+<h1>I Can Help Fulfill Pull Request Flags on GitHub.</h1>
+<div>
+  <p>
+    Pull Request flags are issues that have been categorized but have yet to be resolved. Many of
+    the important issues are handled by team members here at Angular, but you're more than welcome
+    to help us out! If you are able to effectively resolve an issue you will be noted as a
+    contributer in the next release, but more importantly you'll be a hero in our hearts.
+  </p>
+  <p>
+    Below are some of the more recent issues Angular.js has had unresolved. Feel free to search
+    for any issues you find interesting and explore.
+  </p>
+  <div>
+    <div class="btn-group">
+      <label>Search common type:</label>
+      <button ng-click="prFlagsCtrl.query = 'gh: issue'">gh: issue</button>
+      <button ng-click="prFlagsCtrl.query = 'frequency: moderate'">frequency: moderate</button>
+      <button ng-click="prFlagsCtrl.query = 'bug'">bug</button>
+      <button ng-click="prFlagsCtrl.query = 'component'">component</button>
+    </div>
+    <div>
+      <span class="glyphicon glyphicon-search search-icon"></span>
+      <input class="docs-search" ng-model="prFlagsCtrl.query" ng-change="prFlagsCtrl.updateList(prFlagsCtrl.query)" placeholder=" Search for issues ">
+    </div>
+  </div>
+  <div>
+    <ul>
+      <div ng-repeat="issue in prFlagsCtrl.results | filter: prFlagsCtrl.query " class="item-listing">
+        <!-- <div ng-include src="'questions/partials/github-list.html'"></div> -->
+        <span>
+          <h4 class="condense"><a ng-href="{{issue['html_url']}}">{{issue['title']}}</a></h4>
+        </span>
+        <div>
+          <ng-pluralize count="{{issue.labels.length}}"
+          when="{'0':'No Labels:','1':'Label:','other':'Labels:'}"></ng-pluralize>
+
+          <div ng-show="!issue.labels.length">
+            This issue has no labels, learn more about triaging issues
+            <a ng-href="#questions/help-triage">here.</a>
+          </div>
+          <span ng-repeat='label in issue.labels'>
+            <div class="issue-label" ng-bind="label.name"></div>
+          </span>
+        </div>
+      </div>
+    </ul>
+  </div>
+</div>
+
+<div class="footer navbar-fixed-bottom text-center">
+  <ol class="breadcrumb">
+    <li>
+      <a class="inactive" href="#questions/i-want-to-help">I want to help
+      </a>
+    </li>
+    <li>
+      <a class="inactive" href="#questions/help-improve-angular">I want to help with Angular itself
+      </a>
+    </li>
+    <li>
+      <a class="active">I want to help with PR requests</a>
+    </li>
+   </ol>
+</div>
+
+<div class="footer navbar-fixed-bottom">
+  <div class="text-center">
+    <ha-breadcrumbs breadcrumbs="[{url: '#questions/i-want-to-help', text: 'I want to help.'}, {url: '#questions/help-improve-angular', text: 'I want to help improve Angular itself.'}, {url: '#questions/help-pr-flags', text: 'I can help fulfill pull request flags on github.'}]">
+    </ha-breadcrumbs>
+  </div>
+</div>
