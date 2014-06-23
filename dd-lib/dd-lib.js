@@ -86,6 +86,7 @@ var ddLib = {
     'angular-default-directives': {
       message: 'There was an AngularJS error in ',
       directives: {
+        'count': 'A',
         'ng-app': 'A',
         'ng-bind': 'A',
         'ng-bindhtml': 'A',
@@ -138,7 +139,9 @@ var ddLib = {
         'ng-switch': 'A',
         'ng-transclude': 'A',
         'ng-value': 'A',
-        'ng-view': 'A'}
+        'ng-view': 'A',
+        'when': 'A'
+      }
       },
     'angular-custom-directives': {
       message: 'There was an AngularJS error in ',
@@ -223,9 +226,11 @@ ddLib.attributeExsistsInTypes = function(attribute, options) {
     }
     else if(isTag && isCustomDir){
       var directive = ddLib.directiveTypes[directiveType].directives[attribute.substring(1)];
-      if(directive && directive.indexOf('A') > -1 && directive.indexOf('E') < 0) {
-        wrongUse = 'attribute';
+      if(directive){
         allTrue = allTrue || true;
+        if(directive && directive.indexOf('A') > -1 && directive.indexOf('E') < 0) {
+          wrongUse = 'attribute';
+        }
       }
     }
   });

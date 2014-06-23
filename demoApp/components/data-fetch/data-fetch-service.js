@@ -17,7 +17,6 @@ angular.module('dataFetch').
         }
         var prUrl = 'https://api.github.com/repos/angular/angular.js/'
           +'issues?labels=PRs%20plz%21'+query+'&sort=created';
-        console.log(prUrl)
         var prResults = this.fetchData(prUrl);
         return prResults;
       };
