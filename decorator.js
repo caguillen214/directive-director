@@ -7,28 +7,14 @@ var customDirectives = [];
 
 angular.module('deedLib', [])
   .config(['$provide', function($provide) {
-    var compiledElements = [];
-    //customDirectives = []; why did we have this here again?
     $provide.decorator('$compile', ['$delegate', function($delegate) {
       return function(elem) {
-        compiledElements.push(elem[0]);
+        for(var i = 0; i < elem.length; i+=2){
+          var toSend = Array.prototype.slice.call(elem[i].getElementsByTagName('*'));
+          var result = ddLib.beginSearch(toSend,customDirectives);
+        }
         return $delegate.apply(this,arguments);
       };
-    }]);
-
-    $provide.decorator('$rootScope', ['$delegate',
-      function($delegate) {
-        var scopeProto = Object.getPrototypeOf($delegate);
-        var _apply = scopeProto.$apply;
-        scopeProto.$apply = function() {
-          //console.log(compiledElements[0])
-          var ret = _apply.apply(this, arguments);
-          var toSend = Array.prototype.slice.call(compiledElements[0].getElementsByTagName('*'));
-          //console.log(toSend);
-          var result = ddLib.beginSearch(toSend,customDirectives);
-          return ret;
-        };
-        return $delegate;
     }]);
   }]);
 
@@ -37,7 +23,6 @@ angular.module = function() {
   var module = originalAngularModule.apply(this, arguments);
   var originalDirective = module.directive;
   module.directive = function(directiveName, directiveFactory) {
-    //console.log('hi')
     var originalDirectiveFactory = typeof directiveFactory === 'function' ? directiveFactory :
         directiveFactory[directiveFactory.length - 1];
     var directive = {directiveName: directiveName, restrict: 'AE'}

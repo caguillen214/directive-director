@@ -175,6 +175,7 @@ ddLib.findFailedElements = function(scopeElements, options) {
 }
 
 ddLib.getFailedAttributesOfElement = function(options, element) {
+  //console.log(element);
   if(element.attributes.length) {
     element.attributes[element.attributes.length] = {nodeName: "*"+element.nodeName.toLowerCase()};
     var failedAttributes = ddLib.getFailedAttributes(element.attributes, options);
@@ -290,7 +291,7 @@ ddLib.displayResults = function(failedElements) {
       }
       else {
         var aecmType = (attr.wrongUse.indexOf('attribute') > -1)? 'Element' : 'Attribute';
-        message += aecmType+' "'+error+'" is reserved for '+attr.wrongUse+'  names only.';
+        message += aecmType+' name "'+error+'" is reserved for '+attr.wrongUse+' names only.';
       }
       console.warn(message);
       console.log(obj.domElement)
