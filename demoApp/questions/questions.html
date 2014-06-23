@@ -2,7 +2,7 @@
   <div class="vertical-center">
     <div class="btn-group questions span4 offset4 space" ng-repeat="choice in questionsCtrl.choices">
       <a href="#questions/{{choice.url}}" class="">
-        <img src="assets/img/AngularJS-Shield-empty-large.png" />
+        <img scr="assets/img/AngularJS-Shield-empty-large.png" />
         <div class="questionText">
           <a href="#questions/{{choice.url}}" class="simpleLink">{{choice.question}} </a>
         </div>
@@ -17,6 +17,6 @@
     </div>
   </div>
   <div class="text-center">
-    <ha-breadcrumbs breadcrumbs="questionsCtrl.crumbsArray"></ha-breadcrumbs>
+    <breadcrumbs ha-breadcrumbs="questionsCtrl.crumbsArray"></breadcrumbs>
   </div>
 </div>

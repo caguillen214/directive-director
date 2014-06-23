@@ -190,7 +190,7 @@ ddLib.getFailedAttributesOfElement = function(options, element) {
 ddLib.getFailedAttributes = function(attributes, options) {
   var failedAttributes = [];
   for(var i = 0; i <= attributes.length; i++) {
-    var attr = attributes[i].nodeName;
+    var attr = ddLib.normalizeAttribute(attributes[i].nodeName);
     var result = ddLib.attributeExsistsInTypes(attr,options);
     if(!result.exsists) {
       var suggestion = ddLib.getSuggestions(attr,options);
@@ -271,6 +271,10 @@ ddLib.findClosestMatchIn = function(directiveTypeData, attribute) {
     }
   }
   return {min_levDist: min_levDist, match: closestMatch};
+};
+
+ddLib.normalizeAttribute = function(attribute) {
+  return attribute.replace(/^(?:data|x)[-_:]/,"").replace(/[:_]/g,'-');
 };
 
 ddLib.displayResults = function(failedElements) {
